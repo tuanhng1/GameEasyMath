@@ -1,0 +1,8 @@
+:root {
+    --color-one: #004F9D;
+    --color-two: #F6CA45;
+    --font-size: 18px;
+}
+body {
+    font-family: 'Inria Serif', serif;
+}
