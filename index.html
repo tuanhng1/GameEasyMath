@@ -1,11 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Easy Math</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
+
 <body>
-    <p>de</p>
+    <div id="main">
+        <h1>Easy Math</h1>
+        <p id="score">0</p>
+        <p id="level">0</p>
+        <div id="time">Time</div>
+        <div id="calculation"></div>
+        <div id="result"></div>
+        <div id="clickArea">
+            <button id="true" onclick="check('true')" style="display:none;"><i class="fa fa-check"></i></button>
+            <button id="false" onclick="check('false')" style="display:none;"><i class="fa fa-close"></i></button>
+            <button id="startGameButton" onclick="startGame()">Chơi</button> <!-- Nút bắt đầu chơi -->
+        </div>
+        
+    </div>
+
+    <script>
+        let score = 0;
+        let level = 1;
+        let time = 3;// Thời gian hiện tại
+        let fullTime = 3;//Thời gian cho phép toán.
+        let widthTime = 0;//Chiều dài thanh hiển thị thời gian
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min) + min);
+        }
+
+        function getRandomOperator() {
+            let operators = ["+", "-", "*"];
+            let ran = Math.floor(Math.random() * operators.length);
+            return operators[ran];
+        }
+
+        function generateCalculation() {
+            let number1 = getRandomNumber(1 * level, 5 * level);
+            let number2 = getRandomNumber(1 * level, 5 * level);
+            let op = getRandomOperator();
+            let cal = number1 + " " + op + " " + number2;
+
+            document.getElementById("calculation").innerHTML = cal;
+            document.getElementById("result").innerHTML = getRandomResult();
+        }
+
+        function getRandomResult() {
+            let randomResult = Math.random() >= 0.5;//tỉ lệ đúng sai 50:50
+            return randomResult ? getResult() : getFakeResult();
+        }
+
+        function getResult() {
+            let cal = document.getElementById("calculation").innerHTML;
+            return eval(cal);
+        }
+
+        function getFakeResult() {
+            let fakeResult = getRandomNumber(getResult() - 10, getResult() + 10);
+            return (fakeResult === getResult()) ? getFakeResult() : fakeResult;
+        }
+
+        function check(btn) {
+            let result = +document.getElementById("result").innerHTML;
+            let check = false;
+            switch (btn) {
+                case "true":
+                    if (result == getResult()) check = true;
+                    break;
+                case "false":
+                    if (result !== getResult()) check = true;
+                    break;
+            }
+
+            check ? nextLevel() : gameOver();
+        }
+
+        function nextLevel() {
+            score += level;
+            level++;
+            time = fullTime;
+            document.getElementById("score").innerHTML = "Score: " + score;
+            document.getElementById("level").innerHTML = "Level: " + level;
+            generateCalculation();
+        }
+
+        function gameOver() {
+            document.getElementById("true").style.display = "none";
+            document.getElementById("false").style.display = "none";
+            alert("Bạn đã thua với số điểm " + score + ". Bạn có muốn chơi lại không?");
+            location.reload();
+        }
+
+        function countDown() {
+            let timeDiv = document.getElementById("time");
+            let run = setInterval(function () {
+                time -= 0.1;
+                timeDiv.style.width = widthTime * time / fullTime + "px";
+                if (time <= 0) {
+                    clearInterval(run);
+                    gameOver();
+                }
+            }, 100);
+        }
+
+        function startGame() {
+            // Ẩn nút "Bắt đầu chơi"
+            document.getElementById("startGameButton").style.display = "none";
+
+            // Hiển thị các nút "true" và "false"
+            document.getElementById("true").style.display = "inline-block";
+            document.getElementById("false").style.display = "inline-block";
+
+            // Thiết lập lại thời gian và thanh thời gian
+            time = fullTime;
+            widthTime = document.getElementById("time").offsetWidth;
+
+            // Hiển thị điểm và cấp độ ban đầu
+            document.getElementById("score").innerHTML = "Score: " + score;
+            document.getElementById("level").innerHTML = "Level: " + level;
+
+            // Bắt đầu trò chơi
+            generateCalculation();
+            countDown();
+        }
+
+    </script>
 </body>
+
 </html>
